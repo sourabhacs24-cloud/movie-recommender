@@ -185,7 +185,7 @@ function showSection(section) {
     } else if (section === 'browse') {
         elements.browseSection.hidden = false;
         document.getElementById('navBrowse').classList.add('active');
-        loadBrowseSection();
+        filterByGenre('all');
     } else if (section === 'mylist') {
         if (!currentUser) {
             showAuthModal();
@@ -198,38 +198,8 @@ function showSection(section) {
 }
 
 // ============================================
-// Browse Section
+// Browse Section (Logic moved to bottom)
 // ============================================
-
-async function loadBrowseSection() {
-    if (allMovies.length === 0) {
-        allMovies = await getAllMovies();
-    }
-    renderBrowseGrid(allMovies);
-}
-
-function filterByGenre(genre) {
-    currentGenreFilter = genre;
-
-    // Update button states
-    document.querySelectorAll('.genre-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-
-    if (genre === 'all') {
-        renderBrowseGrid(allMovies);
-    } else {
-        const filtered = allMovies.filter(m => m.genre === genre);
-        renderBrowseGrid(filtered);
-    }
-}
-
-function renderBrowseGrid(movies) {
-    if (movies.length === 0) {
-        elements.browseGrid.innerHTML = '<p style="color:#666; padding:20px;">No movies found.</p>';
-        return;
-    }
-    elements.browseGrid.innerHTML = movies.map(createMovieCard).join('');
-}
 
 // ============================================
 // Auth Logic
@@ -636,6 +606,58 @@ const handleSearchInput = debounce(async (event) => {
     const movies = await searchMovies(query);
     renderAutocomplete(movies);
 }, DEBOUNCE_DELAY);
+
+
+// ============================================
+// Browse / Genre Filter Logic
+// ============================================
+let currentGenre = 'all';
+
+async function filterByGenre(genre) {
+    currentGenre = genre;
+
+    // Update active button state
+    document.querySelectorAll('.genre-btn').forEach(btn => {
+        // Simple check for button text match or data attribute if we had it
+        // Check if button text contains the genre (e.g. "Action" in "🎬 Action")
+        const btnText = btn.innerText;
+        if ((genre === 'all' && btnText === 'All') ||
+            (genre !== 'all' && btnText.includes(genre))) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    const grid = document.getElementById('browseGrid');
+    if (!grid) return;
+
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;">Loading movies...</div>';
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/movies`);
+        if (!res.ok) throw new Error('Failed to fetch movies');
+
+        const movies = await res.json();
+
+        const filtered = genre === 'all'
+            ? movies
+            : movies.filter(m => m.genre && m.genre.includes(genre));
+
+        // Display top 50 to avoid DOM overload
+        const displayMovies = filtered.slice(0, 50);
+
+        if (displayMovies.length === 0) {
+            grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;">No movies found.</p>';
+            return;
+        }
+
+        grid.innerHTML = displayMovies.map(createMovieCard).join('');
+    } catch (err) {
+        console.error('Browse error:', err);
+        grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:red;">Error loading movies. Please try again.</p>';
+    }
+}
 
 // Handle card click
 async function handleCardClick(movieId) {
