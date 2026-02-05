@@ -1,0 +1,22 @@
+# Compiled C executables (compiled on deployment)
+c_engine/recommender
+c_engine/movie_system
+c_engine/*.exe
+
+# Data files (reset on each deploy)
+c_engine/*.dat
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
