@@ -65,6 +65,10 @@ body {
     line-height: 1.6;
     min-height: 100vh;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 80px;
+    /* Space for fixed footer */
 }
 
 /* Ensure hidden attribute works */
@@ -703,6 +707,11 @@ body {
     padding: var(--spacing-2xl) 0;
     text-align: center;
     border-top: 1px solid var(--border-color);
+    margin-top: auto;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 .footer p {
@@ -801,5 +810,517 @@ body {
 
     .row-title {
         font-size: 1.2rem;
+    }
+}
+
+/* ============================================
+   Auth Modal
+   ============================================ */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+}
+
+.modal {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2xl);
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: modalSlide 0.3s ease;
+}
+
+@keyframes modalSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 28px;
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.modal-close:hover {
+    color: var(--text-primary);
+}
+
+.modal-title {
+    font-size: 1.75rem;
+    margin-bottom: var(--spacing-xl);
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all var(--transition-fast);
+}
+
+.form-input::placeholder {
+    color: var(--text-muted);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--netflix-red);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.form-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--netflix-red);
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.form-btn:hover {
+    background: var(--netflix-red-hover);
+}
+
+.auth-btn {
+    background: var(--netflix-red);
+    border: none;
+    padding: 8px 20px;
+    border-radius: var(--radius-md);
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.auth-btn:hover {
+    background: var(--netflix-red-hover);
+}
+
+/* ============================================
+   Chat Widget
+   ============================================ */
+.chat-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 320px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.chat-header {
+    background: var(--netflix-red);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.chat-body {
+    height: 250px;
+    overflow-y: auto;
+    padding: var(--spacing-md);
+    background: var(--bg-card);
+}
+
+.chat-input-area {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+.chat-msg {
+    margin-bottom: 12px;
+}
+
+.chat-user {
+    font-size: 12px;
+    color: var(--netflix-red);
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.chat-bubble {
+    background: var(--bg-hover);
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    display: inline-block;
+}
+
+/* ============================================
+   Comments Section
+   ============================================ */
+.comments-section {
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--border-color);
+}
+
+.comments-section h3 {
+    margin-bottom: var(--spacing-md);
+    font-size: 1.1rem;
+}
+
+.comment-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.comment-item {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 12px;
+}
+
+.comment-user {
+    color: var(--netflix-red);
+    font-weight: 600;
+}
+
+.comment-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   Browse Section
+   ============================================ */
+.browse-section {
+    padding: 100px 0 var(--spacing-2xl);
+    min-height: 100vh;
+    background: var(--bg-primary);
+}
+
+.section-title {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-xl);
+}
+
+.genre-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xl);
+}
+
+.genre-btn {
+    padding: 10px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 25px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-size: 0.9rem;
+}
+
+.genre-btn:hover,
+.genre-btn.active {
+    background: var(--netflix-red);
+    border-color: var(--netflix-red);
+    color: white;
+}
+
+.browse-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+/* ============================================
+   My List Button
+   ============================================ */
+.btn-mylist {
+    margin-top: var(--spacing-md);
+    padding: 10px 24px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--text-secondary);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-mylist:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-mylist.added {
+    background: var(--netflix-red);
+    border-color: var(--netflix-red);
+}
+
+/* ============================================
+   User Display in Nav
+   ============================================ */
+.user-display {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    font-size: 0.9rem;
+}
+
+#welcomeMsg {
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .chat-widget {
+        width: 280px;
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .browse-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+
+    .genre-filter {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 10px;
+    }
+
+    .user-display {
+        display: none;
+    }
+}
+
+/* ============================================
+   Preferences Section
+   ============================================ */
+.preferences-section {
+    padding: var(--spacing-xl) 0;
+    background: var(--bg-primary);
+}
+
+.preferences-card {
+    background: linear-gradient(145deg, rgba(30, 30, 35, 0.9), rgba(20, 20, 25, 0.95));
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2xl);
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.preferences-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+}
+
+.preferences-subtitle {
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-xl);
+}
+
+.preferences-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+/* Selected Movie Director */
+.selected-director {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin: var(--spacing-sm) 0 var(--spacing-md) 0;
+}
+
+.selected-director strong {
+    color: var(--netflix-red);
+}
+
+.preference-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+    text-align: left;
+}
+
+.preference-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    font-size: 1rem;
+}
+
+.preference-label span {
+    font-size: 1.25rem;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.preference-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+}
+
+.preference-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    background: var(--netflix-red);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(229, 9, 20, 0.5);
+    transition: transform var(--transition-fast);
+}
+
+.preference-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+.preference-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    background: var(--netflix-red);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(229, 9, 20, 0.5);
+}
+
+.slider-value {
+    min-width: 30px;
+    text-align: right;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--netflix-red);
+}
+
+.generate-btn {
+    background: var(--netflix-red);
+    border: none;
+    padding: 16px 48px;
+    border-radius: 30px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow: 0 4px 20px rgba(229, 9, 20, 0.4);
+}
+
+.generate-btn:hover {
+    background: var(--netflix-red-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(229, 9, 20, 0.5);
+}
+
+/* Movie Card Director Info */
+.card-director {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+    .preferences-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .preferences-card {
+        padding: var(--spacing-lg);
+    }
+
+    .generate-btn {
+        width: 100%;
+    }
+}
+
+/* ============================================
+   Recommendations Grid
+   ============================================ */
+.recommendations-section {
+    padding: var(--spacing-2xl) 0;
+}
+
+.recommendations-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--netflix-red);
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+@media (max-width: 768px) {
+    .recommendations-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-md);
     }
 }

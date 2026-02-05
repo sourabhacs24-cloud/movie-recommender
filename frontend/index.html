@@ -19,9 +19,14 @@
                 <span class="logo-text">MOVIEFLIX</span>
             </div>
             <div class="nav-links">
-                <a href="#" class="nav-link active">Home</a>
-                <a href="#" class="nav-link">Browse</a>
-                <a href="#" class="nav-link">My List</a>
+                <a href="#" class="nav-link active" onclick="showSection('home')">Home</a>
+                <a href="#" class="nav-link" onclick="showSection('browse')">Browse</a>
+                <a href="#" class="nav-link" onclick="showSection('mylist')" id="navMyList" hidden>My List</a>
+            </div>
+            <div class="user-display">
+                <span id="welcomeMsg" hidden>Welcome, <b id="userDisplay">User</b></span>
+                <button id="loginBtn" class="auth-btn">Sign In</button>
+                <button id="logoutBtn" class="auth-btn" hidden style="background:#333;">Sign Out</button>
             </div>
         </div>
     </nav>
@@ -104,6 +109,50 @@
             </div>
         </div>
     </section>
+
+    <!-- My List Section (New) -->
+    <section id="myListSection" class="row-section" hidden>
+        <div class="container">
+            <h2 class="row-title">My List</h2>
+            <div id="myListContainer" class="carousel">
+                <!-- My List Items Injected Here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal-overlay" hidden>
+        <div class="modal">
+            <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+            <h2 class="modal-title" id="authTitle">Sign In</h2>
+            <div class="form-group">
+                <input type="text" id="usernameInput" class="form-input" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="passwordInput" class="form-input" placeholder="Password" required>
+            </div>
+            <button class="form-btn" onclick="handleAuthSubmit()">Submit</button>
+            <p style="margin-top:15px; font-size:14px; color:#aaa; cursor:pointer;" onclick="toggleAuthMode()">
+                <span id="authToggleText">New to MovieFlix? Sign up now.</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Chat Widget -->
+    <div id="chatWidget" class="chat-widget" hidden>
+        <div class="chat-header" onclick="toggleChat()">
+            <span>Community Chat</span>
+            <span id="chatToggleIcon">−</span>
+        </div>
+        <div id="chatBody" class="chat-body">
+            <!-- Messages injected here -->
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" class="form-input" placeholder="Say something..."
+                style="font-size:13px; padding:8px;">
+            <button onclick="sendChatMessage()" class="auth-btn" style="padding:5px 10px;">&gt;</button>
+        </div>
+    </div>
 
     <!-- Error Section -->
     <section id="errorSection" class="error-section" hidden>
