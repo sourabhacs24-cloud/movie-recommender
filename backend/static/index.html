@@ -22,6 +22,7 @@
                 <a href="#" class="nav-link active" id="navHome" onclick="showSection('home')">Home</a>
                 <a href="#" class="nav-link" id="navBrowse" onclick="showSection('browse')">Browse</a>
                 <a href="#" class="nav-link" id="navMyList" onclick="showSection('mylist')" hidden>My List</a>
+                <a href="#" class="nav-link" id="navFriends" onclick="showSection('friends')" hidden>Friends</a>
             </div>
             <div class="user-display">
                 <span id="welcomeMsg" hidden>Welcome, <b id="userDisplay">User</b></span>
@@ -151,6 +152,27 @@
             <h2 class="section-title">My List</h2>
             <div id="myListContainer" class="browse-grid">
                 <!-- My List Items Injected Here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Friends Section -->
+    <section id="friendsSection" class="row-section" hidden>
+        <div class="container">
+            <h2 class="section-title">👥 Friends</h2>
+            <div class="friends-tabs">
+                <button class="friends-tab active" onclick="showFriendsTab('list')">My Friends</button>
+                <button class="friends-tab" onclick="showFriendsTab('requests')">Pending Requests</button>
+                <button class="friends-tab" onclick="showFriendsTab('similar')">Find Similar Users</button>
+            </div>
+            <div id="friendsListTab" class="friends-tab-content">
+                <div id="friendsListContainer" class="friends-grid"></div>
+            </div>
+            <div id="friendsRequestsTab" class="friends-tab-content" hidden>
+                <div id="friendsRequestsContainer" class="friends-grid"></div>
+            </div>
+            <div id="friendsSimilarTab" class="friends-tab-content" hidden>
+                <div id="friendsSimilarContainer" class="friends-grid"></div>
             </div>
         </div>
     </section>

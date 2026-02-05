@@ -2,7 +2,7 @@
 # =============================================================================
 # build.sh - Auto-compile C Recommendation Engine for Linux Deployment
 # =============================================================================
-# This script compiles the C program during cloud deployment.
+# This script compiles the C programs during cloud deployment.
 # Runs automatically on Render/Railway before starting the Flask server.
 # =============================================================================
 
@@ -12,29 +12,42 @@ echo "=========================================="
 echo "Building Movie Recommender Engine..."
 echo "=========================================="
 
-# Navigate to c_engine directory where recommender.c is located
+# Navigate to c_engine directory where source files are located
 cd c_engine
 
-echo "[1/3] Checking for source file..."
+echo "[1/4] Checking for source files..."
 if [ ! -f "recommender.c" ]; then
     echo "ERROR: recommender.c not found!"
     exit 1
 fi
-echo "      Found recommender.c"
-
-echo "[2/3] Compiling C program..."
-gcc -o recommender recommender.c -lm
-
-echo "[3/3] Verifying compilation..."
-if [ ! -f "recommender" ]; then
-    echo "ERROR: Compilation failed - executable not created!"
+if [ ! -f "system_main.c" ]; then
+    echo "ERROR: system_main.c not found!"
     exit 1
 fi
-echo "      Executable 'recommender' created successfully"
+echo "      Found all source files"
 
-# Make executable (just in case)
+echo "[2/4] Compiling recommender..."
+gcc -o recommender recommender.c -lm
+
+echo "[3/4] Compiling movie_system..."
+gcc -o movie_system system_main.c auth.c chat.c comments.c mylist.c friends.c utils.c -lm
+
+echo "[4/4] Verifying compilation..."
+if [ ! -f "recommender" ]; then
+    echo "ERROR: Compilation failed - recommender not created!"
+    exit 1
+fi
+if [ ! -f "movie_system" ]; then
+    echo "ERROR: Compilation failed - movie_system not created!"
+    exit 1
+fi
+echo "      Executables created successfully"
+
+# Make executables (just in case)
 chmod +x recommender
+chmod +x movie_system
 
 echo "=========================================="
 echo "Build completed successfully!"
 echo "=========================================="
+

@@ -158,10 +158,12 @@ def run_manager(module, action, args=[]):
     """
     exe_path = MOVIE_SYSTEM_EXE
     
-    # Check for .exe first (Windows)
-    if os.path.exists(MOVIE_SYSTEM_EXE + '.exe'):
+    # Check for Unix binary first, then Windows .exe
+    if os.path.exists(MOVIE_SYSTEM_EXE):
+        exe_path = MOVIE_SYSTEM_EXE
+    elif os.path.exists(MOVIE_SYSTEM_EXE + '.exe'):
         exe_path = MOVIE_SYSTEM_EXE + '.exe'
-    elif not os.path.exists(MOVIE_SYSTEM_EXE):
+    else:
         return {'error': 'System executable not found'}, 500
 
     cmd = [exe_path, module, action] + [str(a) for a in args]
@@ -285,6 +287,109 @@ def handle_mylist():
 
 
 # ==============================================================================
+# FRIENDS ROUTES
+# ==============================================================================
+
+@app.route('/api/friends', methods=['GET'])
+def get_friends():
+    """Get user's friends list."""
+    username = request.args.get('username')
+    if not username:
+        return jsonify([])
+    
+    res = run_manager('friends', 'list', [username])
+    if res and res.stdout.strip():
+        try:
+            import json
+            return jsonify(json.loads(res.stdout.strip()))
+        except:
+            return jsonify([])
+    return jsonify([])
+
+
+@app.route('/api/friends/requests', methods=['GET'])
+def get_friend_requests():
+    """Get pending friend requests for a user."""
+    username = request.args.get('username')
+    if not username:
+        return jsonify([])
+    
+    res = run_manager('friends', 'requests', [username])
+    if res and res.stdout.strip():
+        try:
+            import json
+            return jsonify(json.loads(res.stdout.strip()))
+        except:
+            return jsonify([])
+    return jsonify([])
+
+
+@app.route('/api/friends/similar', methods=['GET'])
+def get_similar_users():
+    """Find users with similar movie interests."""
+    username = request.args.get('username')
+    if not username:
+        return jsonify([])
+    
+    res = run_manager('friends', 'similar', [username])
+    if res and res.stdout.strip():
+        try:
+            import json
+            return jsonify(json.loads(res.stdout.strip()))
+        except:
+            return jsonify([])
+    return jsonify([])
+
+
+@app.route('/api/friends/request', methods=['POST'])
+def send_friend_request():
+    """Send a friend request."""
+    data = request.json
+    from_user = data.get('from_user')
+    to_user = data.get('to_user')
+    
+    if not from_user or not to_user:
+        return jsonify({'error': 'Missing users'}), 400
+    
+    res = run_manager('friends', 'send', [from_user, to_user])
+    if res and 'SUCCESS' in res.stdout:
+        return jsonify({'success': True})
+    return jsonify({'error': 'Request failed (may already exist)'}), 400
+
+
+@app.route('/api/friends/accept', methods=['POST'])
+def accept_friend_request():
+    """Accept a friend request."""
+    data = request.json
+    from_user = data.get('from_user')  # The one who sent the request
+    to_user = data.get('to_user')      # Current user accepting
+    
+    if not from_user or not to_user:
+        return jsonify({'error': 'Missing users'}), 400
+    
+    res = run_manager('friends', 'accept', [from_user, to_user])
+    if res and 'SUCCESS' in res.stdout:
+        return jsonify({'success': True})
+    return jsonify({'error': 'Accept failed'}), 400
+
+
+@app.route('/api/friends/reject', methods=['POST'])
+def reject_friend_request():
+    """Reject a friend request."""
+    data = request.json
+    from_user = data.get('from_user')
+    to_user = data.get('to_user')
+    
+    if not from_user or not to_user:
+        return jsonify({'error': 'Missing users'}), 400
+    
+    res = run_manager('friends', 'reject', [from_user, to_user])
+    if res and 'SUCCESS' in res.stdout:
+        return jsonify({'success': True})
+    return jsonify({'error': 'Reject failed'}), 400
+
+
+# ==============================================================================
 # API ROUTES
 # ==============================================================================
 
@@ -346,11 +451,13 @@ def recommend():
             'error': 'Invalid movie_id. Must be a positive integer.'
         }), 400
     
-    # Check for recommender executable (Windows or Linux)
+    # Check for recommender executable (Unix first, then Windows)
     exe_path = RECOMMENDER_EXE
-    if os.path.exists(RECOMMENDER_EXE + '.exe'):
+    if os.path.exists(RECOMMENDER_EXE):
+        exe_path = RECOMMENDER_EXE
+    elif os.path.exists(RECOMMENDER_EXE + '.exe'):
         exe_path = RECOMMENDER_EXE + '.exe'
-    elif not os.path.exists(RECOMMENDER_EXE):
+    else:
         return jsonify({
             'error': 'Recommender engine not found. Please compile the C program.',
             'hint': 'Run: gcc -o recommender recommender.c -lm'

@@ -6,7 +6,10 @@
 // ============================================
 // Configuration
 // ============================================
-const API_BASE_URL = 'https://movie-recom-ekts.onrender.com';
+// Use empty string for production (same-origin), localhost for development
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://127.0.0.1:5001'
+    : '';
 const DEBOUNCE_DELAY = 300;
 const CHAT_POLL_INTERVAL = 3000;
 
@@ -26,6 +29,7 @@ const elements = {
     recommendationsSection: document.getElementById('recommendationsSection'),
     errorSection: document.getElementById('errorSection'),
     myListSection: document.getElementById('myListSection'),
+    friendsSection: document.getElementById('friendsSection'),
 
     // Dynamic Content
     browseGrid: document.getElementById('browseGrid'),
@@ -45,6 +49,7 @@ const elements = {
     welcomeMsg: document.getElementById('welcomeMsg'),
     userDisplay: document.getElementById('userDisplay'),
     navMyList: document.getElementById('navMyList'),
+    navFriends: document.getElementById('navFriends'),
 
     // Chat
     chatWidget: document.getElementById('chatWidget'),
@@ -176,6 +181,7 @@ function showSection(section) {
     elements.selectedMovieSection.hidden = true;
     elements.recommendationsSection.hidden = true;
     elements.myListSection.hidden = true;
+    if (elements.friendsSection) elements.friendsSection.hidden = true;
     hideError();
 
     if (section === 'home') {
@@ -194,6 +200,14 @@ function showSection(section) {
         elements.myListSection.hidden = false;
         document.getElementById('navMyList').classList.add('active');
         loadMyList();
+    } else if (section === 'friends') {
+        if (!currentUser) {
+            showAuthModal();
+            return;
+        }
+        elements.friendsSection.hidden = false;
+        document.getElementById('navFriends').classList.add('active');
+        loadFriendsList();
     }
 }
 
@@ -273,6 +287,7 @@ function loginSuccess(username) {
     elements.loginBtn.hidden = true;
     elements.logoutBtn.hidden = false;
     elements.navMyList.hidden = false;
+    if (elements.navFriends) elements.navFriends.hidden = false;
     elements.chatWidget.hidden = false;
 
     startChatPolling();
@@ -285,9 +300,11 @@ function logout() {
     elements.loginBtn.hidden = false;
     elements.logoutBtn.hidden = true;
     elements.navMyList.hidden = true;
+    if (elements.navFriends) elements.navFriends.hidden = true;
     elements.chatWidget.hidden = true;
     stopChatPolling();
     elements.myListSection.hidden = true;
+    if (elements.friendsSection) elements.friendsSection.hidden = true;
     myListIds.clear();
 }
 
@@ -830,3 +847,203 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// ============================================
+// Friends Feature
+// ============================================
+
+function showFriendsTab(tab) {
+    // Update tab buttons
+    document.querySelectorAll('.friends-tab').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+
+    // Hide all tab contents
+    document.getElementById('friendsListTab').hidden = true;
+    document.getElementById('friendsRequestsTab').hidden = true;
+    document.getElementById('friendsSimilarTab').hidden = true;
+
+    // Show selected tab
+    if (tab === 'list') {
+        document.getElementById('friendsListTab').hidden = false;
+        loadFriendsList();
+    } else if (tab === 'requests') {
+        document.getElementById('friendsRequestsTab').hidden = false;
+        loadFriendRequests();
+    } else if (tab === 'similar') {
+        document.getElementById('friendsSimilarTab').hidden = false;
+        loadSimilarUsers();
+    }
+}
+
+async function loadFriendsList() {
+    if (!currentUser) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/friends?username=${encodeURIComponent(currentUser)}`);
+        const friends = await response.json();
+
+        const container = document.getElementById('friendsListContainer');
+        if (friends.length === 0) {
+            container.innerHTML = `
+                <div class="friends-empty">
+                    <div class="friends-empty-icon">👥</div>
+                    <p>No friends yet. Find users with similar interests!</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = friends.map(friend => `
+            <div class="friend-card">
+                <div class="friend-avatar">${friend.username.charAt(0).toUpperCase()}</div>
+                <div class="friend-info">
+                    <div class="friend-name">${escapeHtml(friend.username)}</div>
+                    <div class="friend-meta">Friend</div>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading friends:', error);
+    }
+}
+
+async function loadFriendRequests() {
+    if (!currentUser) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/friends/requests?username=${encodeURIComponent(currentUser)}`);
+        const requests = await response.json();
+
+        const container = document.getElementById('friendsRequestsContainer');
+        if (requests.length === 0) {
+            container.innerHTML = `
+                <div class="friends-empty">
+                    <div class="friends-empty-icon">📬</div>
+                    <p>No pending friend requests</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = requests.map(req => `
+            <div class="friend-card">
+                <div class="friend-avatar">${req.from_user.charAt(0).toUpperCase()}</div>
+                <div class="friend-info">
+                    <div class="friend-name">${escapeHtml(req.from_user)}</div>
+                    <div class="friend-meta">Wants to be friends</div>
+                </div>
+                <div class="friend-actions">
+                    <button class="friend-btn accept" onclick="acceptFriend('${escapeHtml(req.from_user)}')">Accept</button>
+                    <button class="friend-btn reject" onclick="rejectFriend('${escapeHtml(req.from_user)}')">Reject</button>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading friend requests:', error);
+    }
+}
+
+async function loadSimilarUsers() {
+    if (!currentUser) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/friends/similar?username=${encodeURIComponent(currentUser)}`);
+        const users = await response.json();
+
+        const container = document.getElementById('friendsSimilarContainer');
+        if (users.length === 0) {
+            container.innerHTML = `
+                <div class="friends-empty">
+                    <div class="friends-empty-icon">🎬</div>
+                    <p>Add movies to your list to find users with similar tastes!</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = users.map(user => `
+            <div class="friend-card">
+                <div class="friend-avatar">${user.username.charAt(0).toUpperCase()}</div>
+                <div class="friend-info">
+                    <div class="friend-name">${escapeHtml(user.username)}</div>
+                    <div class="friend-meta">
+                        <span class="match-score">${user.match_score}% Match</span>
+                        <span>${user.shared_genres} shared genre(s)</span>
+                    </div>
+                </div>
+                <div class="friend-actions">
+                    <button class="friend-btn primary" onclick="sendFriendRequest('${escapeHtml(user.username)}')">Add Friend</button>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading similar users:', error);
+    }
+}
+
+async function sendFriendRequest(toUser) {
+    if (!currentUser) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/friends/request`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ from_user: currentUser, to_user: toUser })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            alert('Friend request sent!');
+            loadSimilarUsers();
+        } else {
+            alert(data.error || 'Failed to send request');
+        }
+    } catch (error) {
+        console.error('Error sending friend request:', error);
+        alert('Failed to send friend request');
+    }
+}
+
+async function acceptFriend(fromUser) {
+    if (!currentUser) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/friends/accept`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ from_user: fromUser, to_user: currentUser })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            alert('Friend request accepted!');
+            loadFriendRequests();
+        } else {
+            alert(data.error || 'Failed to accept request');
+        }
+    } catch (error) {
+        console.error('Error accepting friend request:', error);
+        alert('Failed to accept friend request');
+    }
+}
+
+async function rejectFriend(fromUser) {
+    if (!currentUser) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/friends/reject`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ from_user: fromUser, to_user: currentUser })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            loadFriendRequests();
+        } else {
+            alert(data.error || 'Failed to reject request');
+        }
+    } catch (error) {
+        console.error('Error rejecting friend request:', error);
+    }
+}

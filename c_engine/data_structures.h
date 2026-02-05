@@ -114,4 +114,35 @@ void print_user_list(ListTable *table, const char *username);
 void save_lists(ListTable *table, const char *filename);
 void load_lists(ListTable *table, const char *filename);
 
+// ================= FRIENDS STRUCTURES =================
+typedef struct FriendRequest {
+    char from_user[MAX_USERNAME];
+    char to_user[MAX_USERNAME];
+    long timestamp;
+    struct FriendRequest *next;
+} FriendRequest;
+
+typedef struct Friendship {
+    char user1[MAX_USERNAME];
+    char user2[MAX_USERNAME];
+    long timestamp;
+    struct Friendship *next;
+} Friendship;
+
+typedef struct {
+    FriendRequest *pending_requests;
+    Friendship *friendships;
+} FriendTable;
+
+// Friends
+void init_friends(FriendTable *table);
+int send_friend_request(FriendTable *table, const char *from_user, const char *to_user);
+int accept_friend_request(FriendTable *table, const char *from_user, const char *to_user);
+int reject_friend_request(FriendTable *table, const char *from_user, const char *to_user);
+void print_friends(FriendTable *table, const char *username);
+void print_pending_requests(FriendTable *table, const char *username);
+void print_similar_users(FriendTable *table, ListTable *listTable, const char *username);
+void save_friends(FriendTable *table, const char *filename);
+void load_friends(FriendTable *table, const char *filename);
+
 #endif

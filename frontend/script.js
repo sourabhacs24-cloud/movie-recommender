@@ -12,7 +12,7 @@
 // ============================================
 // Configuration
 // ============================================
-const API_BASE_URL = 'http://localhost:5000/api'; // Updated base
+const API_BASE_URL = 'http://localhost:5001/api'; // Updated base
 const DEBOUNCE_DELAY = 300;
 const CHAT_POLL_INTERVAL = 3000;
 
