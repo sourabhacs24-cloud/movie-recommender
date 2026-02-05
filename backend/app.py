@@ -431,10 +431,15 @@ def api_docs():
 # SERVER STARTUP
 # ==============================================================================
 
-if __name__ == '__main__':
-    # Load movies at startup
+# Load movies at startup (Must be outside __name__ check for Gunicorn/Render)
+try:
+    print("Loading movies...")
     load_movies()
-    
+    print(f"Loaded {len(all_movies)} movies.")
+except Exception as e:
+    print(f"Error loading movies: {e}")
+
+if __name__ == '__main__':
     # Production server configuration:
     # - host='0.0.0.0' allows external connections (required for cloud deployment)
     # - port=5000 is the default Flask port (can be overridden by PORT env variable)
