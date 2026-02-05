@@ -355,7 +355,33 @@ async function selectMovie(movie) {
 
         elements.selectedMovieSection.hidden = false;
         elements.preferencesSection.hidden = false;
-        renderRecommendations(recommendations, movie);
+
+        // Apply weighted scoring based on preferences
+        const scored = recommendations.map(rec => {
+            let score = 0;
+
+            // Genre similarity (weight * 10 if same genre)
+            if (rec.genre === movie.genre) {
+                score += preferences.genre * 10;
+            }
+
+            // Rating similarity (weight * inverse of rating difference)
+            const ratingDiff = Math.abs(rec.rating - movie.rating);
+            score += preferences.rating * (10 - ratingDiff);
+
+            // Director similarity (weight * 10 if same director)
+            if (rec.director && movie.director &&
+                rec.director.toLowerCase() === movie.director.toLowerCase()) {
+                score += preferences.director * 10;
+            }
+
+            return { ...rec, score };
+        });
+
+        // Sort by score descending
+        scored.sort((a, b) => b.score - a.score);
+
+        renderRecommendations(scored, movie);
 
         if (currentUser) {
             updateMyListButton(movie.id);
@@ -827,23 +853,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // Focus search on load
     elements.searchInput.focus();
 
-    // Preference slider event handlers
+    // Preference slider event handlers - update recommendations when changed
     if (elements.genreWeight) {
         elements.genreWeight.addEventListener('input', (e) => {
             preferences.genre = parseInt(e.target.value);
             elements.genreValue.textContent = e.target.value;
+            if (selectedMovie) generateRecommendations();
         });
     }
     if (elements.ratingWeight) {
         elements.ratingWeight.addEventListener('input', (e) => {
             preferences.rating = parseInt(e.target.value);
             elements.ratingValue.textContent = e.target.value;
+            if (selectedMovie) generateRecommendations();
         });
     }
     if (elements.directorWeight) {
         elements.directorWeight.addEventListener('input', (e) => {
             preferences.director = parseInt(e.target.value);
             elements.directorValue.textContent = e.target.value;
+            if (selectedMovie) generateRecommendations();
         });
     }
 });
