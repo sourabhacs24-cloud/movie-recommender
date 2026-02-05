@@ -6,7 +6,7 @@
 // ============================================
 // Configuration
 // ============================================
-const API_BASE_URL = '';
+const API_BASE_URL = 'https://movie-recom-ekts.onrender.com';
 const DEBOUNCE_DELAY = 300;
 const CHAT_POLL_INTERVAL = 3000;
 
