@@ -94,7 +94,7 @@ void load_comments(CommentTable *table, const char *filename) {
 
     char line[512];
     while (fgets(line, sizeof(line), file)) {
-        line[strcspn(line, "\n")] = 0;
+        line[strcspn(line, "\r\n")] = 0;
         char *idStr = strtok(line, "|");
         char *user = strtok(NULL, "|");
         char *timeStr = strtok(NULL, "|");

@@ -65,7 +65,7 @@ void load_chat(ChatQueue *queue, const char *filename) {
     init_chat(queue);
     
     while (fgets(line, sizeof(line), file)) {
-        line[strcspn(line, "\n")] = 0;
+        line[strcspn(line, "\r\n")] = 0;
         char *user = strtok(line, "|");
         char *ts = strtok(NULL, "|");
         char *text = strtok(NULL, "|");

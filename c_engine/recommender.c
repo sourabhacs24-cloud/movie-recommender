@@ -36,8 +36,8 @@ int loadMoviesFromFile(const char *filename) {
   int count = 0;
 
   while (fgets(line, sizeof(line), file) != NULL && count < MAX_MOVIES) {
-    // Remove newline
-    line[strcspn(line, "\n")] = '\0';
+    // Remove newline (and carriage return for Windows compatibility)
+    line[strcspn(line, "\r\n")] = '\0';
 
     // Parse CSV: id,title,genre,rating
     Movie movie;

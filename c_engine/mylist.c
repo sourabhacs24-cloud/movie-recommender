@@ -111,7 +111,7 @@ void load_lists(ListTable *table, const char *filename) {
     
     char line[256];
     while (fgets(line, sizeof(line), file)) {
-        line[strcspn(line, "\n")] = 0;
+        line[strcspn(line, "\r\n")] = 0;
         char *user = strtok(line, ",");
         char *idStr = strtok(NULL, ",");
         
