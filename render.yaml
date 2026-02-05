@@ -2,9 +2,9 @@ services:
   - type: web
     name: movie-recommender-api
     env: python
-    buildCommand: |
-      cd c_engine && gcc -o recommender recommender.c -lm && gcc -o movie_system system_main.c auth.c comments.c chat.c mylist.c friends.c utils.c -lm && cd .. && pip install -r requirements.txt
-    startCommand: gunicorn --chdir backend app:app --bind 0.0.0.0:$PORT
+    buildCommand: pip install -r requirements.txt
+    startCommand: chmod +x start.sh && ./start.sh
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.0
+
