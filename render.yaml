@@ -3,10 +3,7 @@ services:
     name: movie-recommender-api
     env: python
     buildCommand: |
-      apt-get update && apt-get install -y gcc
-      cd c_engine && gcc -o recommender recommender.c -lm
-      cd c_engine && gcc -o movie_system system_main.c auth.c comments.c chat.c mylist.c utils.c -lm
-      pip install -r requirements.txt
+      cd c_engine && gcc -o recommender recommender.c -lm && gcc -o movie_system system_main.c auth.c comments.c chat.c mylist.c utils.c -lm && cd .. && pip install -r requirements.txt
     startCommand: gunicorn --chdir backend app:app --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION

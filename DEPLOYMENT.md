@@ -29,7 +29,7 @@ git push -u origin main
    - **Environment**: `Python 3`
    - **Build Command**: 
      ```
-     apt-get update && apt-get install -y gcc && cd c_engine && gcc -o recommender recommender.c -lm && gcc -o movie_system system_main.c auth.c comments.c chat.c mylist.c utils.c -lm && pip install -r requirements.txt
+     cd c_engine && gcc -o recommender recommender.c -lm && gcc -o movie_system system_main.c auth.c comments.c chat.c mylist.c utils.c -lm && cd .. && pip install -r requirements.txt
      ```
    - **Start Command**: `gunicorn --chdir backend app:app --bind 0.0.0.0:$PORT`
 5. Click **Create Web Service**
