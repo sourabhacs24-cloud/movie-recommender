@@ -4,8 +4,8 @@
 
 | Component | Platform | URL Pattern |
 |-----------|----------|-------------|
-| **Backend API** | Render | `https://your-app.onrender.com` |
-| **Frontend** | Vercel | `https://your-app.vercel.app` |
+| **Backend API** | Render | `https://movie-recom-ekts.onrender.com` |
+| **Frontend** | Vercel | `https://movie-recom-q786iidf4-surendra-vishwakarmas-projects.vercel.app` |
 
 ---
 

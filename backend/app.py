@@ -24,7 +24,10 @@ import os
 # Initialize Flask app with static folder configuration
 # Static files (index.html, style.css, script.js) are served from 'static' folder
 app = Flask(__name__, static_folder='static', static_url_path='')
-CORS(app)  # Enable CORS for cross-origin requests
+# Allow all origins for simplicity in this project
+# In a strict production environment, you would list specific domains:
+# CORS(app, origins=["https://movie-recom-q786iidf4-surendra-vishwakarmas-projects.vercel.app"])
+CORS(app)
 
 # ==============================================================================
 # PATH CONFIGURATION (Production-Ready)
