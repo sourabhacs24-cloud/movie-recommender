@@ -69,7 +69,7 @@ void load_users(UserTable *table, const char *filename) {
 
     char line[256];
     while (fgets(line, sizeof(line), file)) {
-        line[strcspn(line, "\n")] = 0;
+        line[strcspn(line, "\r\n")] = 0;
         char *username = strtok(line, ",");
         char *password = strtok(NULL, ",");
         if (username && password) {
